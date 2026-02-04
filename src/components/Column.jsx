@@ -1,35 +1,48 @@
 import { useState } from "react";
 import Note from "./Note";
 
-const Column = ({ title, notes, addNote, deleteNote }) => {
+const Column = ({ columnKey, notes, addNote, updateNote, deleteNote }) => {
+  const [adding, setAdding] = useState(false);
   const [input, setInput] = useState("");
 
   const handleAdd = () => {
-    addNote(title, input);
+    addNote(columnKey, input);
     setInput("");
+    setAdding(false);
   };
 
   return (
     <div className="column">
-      <h3>{title.toUpperCase()}</h3>
-
-      <div className="note-input">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Add a note..."
-        />
-        <button onClick={handleAdd}>+</button>
-      </div>
+      <h3>{columnKey.toUpperCase()}</h3>
 
       {notes.map((note) => (
         <Note
           key={note.id}
+          columnKey={columnKey}
           note={note}
-          columnKey={title}
+          updateNote={updateNote}
           deleteNote={deleteNote}
         />
       ))}
+
+      {adding ? (
+        <div className="note new-note">
+          <input
+            autoFocus
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onBlur={handleAdd}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleAdd();
+            }}
+            placeholder="Type note..."
+          />
+        </div>
+      ) : (
+        <div className="note new-note" onClick={() => setAdding(true)}>
+          + Add Note
+        </div>
+      )}
     </div>
   );
 };
