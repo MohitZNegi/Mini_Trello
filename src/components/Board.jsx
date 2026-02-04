@@ -1,54 +1,49 @@
 import { useState } from "react";
+import Column from "./Column";
+
+const initialBoard = {
+  todo: [],
+  doing: [],
+  done: [],
+};
 
 const Board = () => {
-  // State: list of all notes on the board
-  const [notes, setNotes] = useState([]);
+  const [board, setBoard] = useState(initialBoard);
 
-  // State: input value for new note
-  const [input, setInput] = useState("");
-
-  // Add a new note
-  const addNote = () => {
-    if (input.trim() === "") return;
+  const addNote = (columnKey, text) => {
+    if (text.trim() === "") return;
 
     const newNote = {
-      id: Date.now(), // unique id
-      text: input,
-      x: 50,
-      y: 50,
+      id: Date.now(),
+      text,
     };
 
-    setNotes((prevNotes) => [...prevNotes, newNote]);
-    setInput("");
+    setBoard((prev) => ({
+      ...prev,
+      [columnKey]: [...prev[columnKey], newNote],
+    }));
   };
 
-  // Delete a note by id
-  const deleteNote = (id) => {
-    setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
+  const deleteNote = (columnKey, noteId) => {
+    setBoard((prev) => ({
+      ...prev,
+      [columnKey]: prev[columnKey].filter((note) => note.id !== noteId),
+    }));
   };
 
   return (
     <div className="board">
-      <h2>Sticky Notes Board</h2>
+      <h2>Kanban Board</h2>
 
-      {/* Input section */}
-      <div className="controls">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Write a note..."
-        />
-        <button onClick={addNote}>Add</button>
-      </div>
-
-      {/* Notes container */}
-      <div className="notes-area">
-        {notes.map((note) => (
-          <div key={note.id} className="note">
-            <p>{note.text}</p>
-            <button onClick={() => deleteNote(note.id)}>Delete</button>
-          </div>
+      <div className="columns">
+        {Object.keys(board).map((key) => (
+          <Column
+            key={key}
+            title={key}
+            notes={board[key]}
+            addNote={addNote}
+            deleteNote={deleteNote}
+          />
         ))}
       </div>
     </div>
