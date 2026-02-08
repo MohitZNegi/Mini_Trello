@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const Note = ({ note, columnKey, updateNote, deleteNote }) => {
+const Note = ({ note, columnKey, updateNote, deleteNote, setDraggedNote }) => {
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState(note.text);
 
@@ -10,7 +10,13 @@ const Note = ({ note, columnKey, updateNote, deleteNote }) => {
   };
 
   return (
-    <div className="note">
+    <div
+      className="note"
+      draggable
+      onDragStart={() =>
+        setDraggedNote({ noteId: note.id, fromColumn: columnKey })
+      }
+    >
       {editing ? (
         <input
           autoFocus

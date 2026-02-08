@@ -1,7 +1,15 @@
 import { useState } from "react";
 import Note from "./Note";
 
-const Column = ({ columnKey, notes, addNote, updateNote, deleteNote }) => {
+const Column = ({
+  columnKey,
+  notes,
+  addNote,
+  updateNote,
+  deleteNote,
+  setDraggedNote,
+  moveNote,
+}) => {
   const [adding, setAdding] = useState(false);
   const [input, setInput] = useState("");
 
@@ -12,7 +20,11 @@ const Column = ({ columnKey, notes, addNote, updateNote, deleteNote }) => {
   };
 
   return (
-    <div className="column">
+    <div
+      className="column"
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={() => moveNote(columnKey)}
+    >
       <h3>{columnKey.toUpperCase()}</h3>
 
       {notes.map((note) => (
@@ -22,6 +34,7 @@ const Column = ({ columnKey, notes, addNote, updateNote, deleteNote }) => {
           note={note}
           updateNote={updateNote}
           deleteNote={deleteNote}
+          setDraggedNote={setDraggedNote}
         />
       ))}
 

@@ -9,17 +9,18 @@ const initialBoard = {
 
 const Board = () => {
   const [board, setBoard] = useState(initialBoard);
+  const [draggedNote, setDraggedNote] = useState(null);
 
   // Add a note to a column
   const addNote = (columnKey, text) => {
     if (!text.trim()) return;
     const newNote = { id: Date.now(), text };
+
     setBoard((prev) => ({
       ...prev,
       [columnKey]: [...prev[columnKey], newNote],
     }));
   };
-
   // Update note text
   const updateNote = (columnKey, noteId, newText) => {
     setBoard((prev) => ({
@@ -29,7 +30,6 @@ const Board = () => {
       ),
     }));
   };
-
   // Delete note
   const deleteNote = (columnKey, noteId) => {
     setBoard((prev) => ({
@@ -38,9 +38,29 @@ const Board = () => {
     }));
   };
 
+  // move note
+  const moveNote = (toColumn) => {
+    if (!draggedNote) return;
+
+    const { noteId, fromColumn } = draggedNote;
+    if (fromColumn === toColumn) return;
+
+    const noteToMove = board[fromColumn].find((n) => n.id === noteId);
+    if (!noteToMove) return;
+
+    setBoard((prev) => ({
+      ...prev,
+      [fromColumn]: prev[fromColumn].filter((n) => n.id !== noteId),
+      [toColumn]: [...prev[toColumn], noteToMove],
+    }));
+
+    setDraggedNote(null);
+  };
+
   return (
     <div className="board">
       <h2>Kanban Board</h2>
+
       <div className="columns">
         {Object.keys(board).map((key) => (
           <Column
@@ -50,6 +70,8 @@ const Board = () => {
             addNote={addNote}
             updateNote={updateNote}
             deleteNote={deleteNote}
+            setDraggedNote={setDraggedNote}
+            moveNote={moveNote}
           />
         ))}
       </div>
